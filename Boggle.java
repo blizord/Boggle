@@ -1,6 +1,7 @@
 import java.net.*;
 import java.io.*;
 import java.util.Scanner;
+import java.util.ArrayList;
 
 public class Boggle {
 	public static void main(String [] args) {
@@ -16,11 +17,30 @@ public class Boggle {
 			DataInputStream in = new DataInputStream(s.getInputStream());
 			
 			String ready = "";
-			while(!ready.equals("y")) {
-				System.out.println("Type 'y' to ready up");
-				ready = scan.nextLine();
-				out.writeUTF(ready);
+			System.out.println("Type name to ready up");
+			ready = scan.nextLine();
+			out.writeUTF(ready);
+			
+			//wait for GameServer to send signal to start
+			in.readUTF();
+			
+			Game game = new Game(in, out);
+			
+			game.start();
+			ArrayList<String> words = game.getWords();
+			out.writeInt(words.size());
+			for(int i = 0; i < words.size(); i++) {
+				out.writeUTF(words.get(i));
 			}
+			
+			try {
+				String results = in.readUTF();
+				System.out.println(results);
+			} catch(IOException e) {
+				System.out.println(e);
+			}
+		
+			
 			
         } catch (Exception e) {
 			//handle exception

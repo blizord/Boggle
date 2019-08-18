@@ -8,6 +8,7 @@ public class BoggleServer {
 		Scanner scan = new Scanner(System.in);
 		ServerSocket serverSocket;
 		int numPlayers = scan.nextInt();
+		String[] name = new String[numPlayers];
 		Socket[] server = new Socket[numPlayers];
 		boolean[] ready = new boolean[numPlayers];
 		DataInputStream in[] = new DataInputStream[numPlayers];
@@ -23,15 +24,11 @@ public class BoggleServer {
 				out[i] = new DataOutputStream(server[i].getOutputStream());
 			}
 			
-			while (!allTrue(ready)) {
-				for(int i = 0; i < numPlayers; i++) {
-					if(in[i].readUTF().equals("y")) {
-						ready[i] = true;
-					}
-				}
+			for(int i = 0; i < numPlayers; i++) {
+				name[i] = in[i].readUTF();
 			}
 			
-			GameServer gameServer = new GameServer(server, in, out);
+			GameServer gameServer = new GameServer(numPlayers, server, in, out, name);
 			
 			gameServer.start();
 			
